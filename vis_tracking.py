@@ -11,8 +11,8 @@ from matplotlib import cm
 import pickle
 
 from fusion import Fusion
-from utils.draw_utils import aggr_point_cloud_from_data
-from utils.track_vis import TrackVis
+from d3fields.utils.draw_utils import aggr_point_cloud_from_data
+from d3fields.utils.track_vis import TrackVis
 
 fusion = Fusion(num_cam=4)
 
@@ -39,7 +39,7 @@ kypts_boundaries = {'x_lower': x_lower,
                     'z_lower': -0.2,
                     'z_upper': -0.02,}
 
-vis_o3d = True
+vis_o3d = False
 
 def gen_dense_kypts(data_path, src_feat_info):
     colors = np.stack([cv2.imread(os.path.join(data_path, f'camera_{i}', 'color', f'0.png')) for i in range(num_cam)], axis=0)# [N, H, W, C]

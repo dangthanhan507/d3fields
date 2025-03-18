@@ -12,7 +12,7 @@ import trimesh
 import argparse
 
 from fusion import Fusion, create_init_grid
-from utils.draw_utils import aggr_point_cloud_from_data
+from d3fields.utils.draw_utils import aggr_point_cloud_from_data
 
 def main(data_path,
          pca_path,

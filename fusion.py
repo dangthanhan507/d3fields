@@ -21,13 +21,13 @@ import open3d as o3d
 import groundingdino
 from groundingdino.util.inference import Model as GroundingDINOModel
 from segment_anything import build_sam, SamPredictor
-from XMem.model.network import XMem
-from XMem.inference.data.mask_mapper import MaskMapper
-from XMem.inference.inference_core import InferenceCore
-from XMem.dataset.range_transform import im_normalization
-from utils.grounded_sam import grounded_instance_sam_new_ver
-from utils.draw_utils import draw_keypoints, aggr_point_cloud_from_data
-from utils.my_utils import  depth2fgpcd, fps_np
+from d3fields.XMem.model.network import XMem
+from d3fields.XMem.inference.data.mask_mapper import MaskMapper
+from d3fields.XMem.inference.inference_core import InferenceCore
+from d3fields.XMem.dataset.range_transform import im_normalization
+from d3fields.utils.grounded_sam import grounded_instance_sam_new_ver
+from d3fields.utils.draw_utils import draw_keypoints, aggr_point_cloud_from_data
+from d3fields.utils.my_utils import  depth2fgpcd, fps_np
 
 def project_points_coords(pts, Rt, K):
     """

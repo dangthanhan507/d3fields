@@ -20,7 +20,8 @@ import torch
 from torch.autograd import Variable
 import torchvision.transforms as T
 
-from dgl.geometry import farthest_point_sampler
+# from dgl.geometry import farthest_point_sampler
+# from torch_geometric.nn import fps as farthest_point_sampler
 import open3d as o3d
 
 from PIL import Image, ImageEnhance

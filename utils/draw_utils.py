@@ -1,7 +1,7 @@
 import matplotlib
 # matplotlib.use('Agg')
 
-from utils.my_utils import depth2fgpcd, np2o3d
+from d3fields.utils.my_utils import depth2fgpcd, np2o3d
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt

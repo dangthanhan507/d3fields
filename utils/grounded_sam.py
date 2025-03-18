@@ -19,7 +19,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils.my_utils import get_current_YYYY_MM_DD_hh_mm_ss_ms
+from d3fields.utils.my_utils import get_current_YYYY_MM_DD_hh_mm_ss_ms
 
 
 def load_image(image_path):

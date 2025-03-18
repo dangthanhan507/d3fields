@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from XMem.dataset.util import all_to_onehot
+from d3fields.XMem.dataset.util import all_to_onehot
 
 
 class MaskMapper:

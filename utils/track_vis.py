@@ -4,7 +4,7 @@ import cv2
 from matplotlib import cm
 import open3d as o3d
 
-from utils.draw_utils import draw_keypoints
+from d3fields.utils.draw_utils import draw_keypoints
 
 def vis_tracking_multimodal_pts(img, K, pose, match_pts_list, preset_colors = None):
     # :param match_pts_list: list of [num_pts, 3]
@@ -130,7 +130,7 @@ class TrackVis():
                         w_idx * int(self.W * self.imshow_ratio):(w_idx + 1) * int(self.W * self.imshow_ratio)] = \
                             cv2.resize(vis_img, (int(self.W * self.imshow_ratio), int(self.H * self.imshow_ratio)), interpolation=cv2.INTER_AREA)
         
-        cv2.imshow('merge_img', merge_img)
+        # cv2.imshow('merge_img', merge_img)
         self.vid.write(merge_img)
         
         key = cv2.waitKey(1)
