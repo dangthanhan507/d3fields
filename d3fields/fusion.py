@@ -228,18 +228,18 @@ class Fusion():
         
         # load GroundedSAM model
         curr_path = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(groundingdino.__path__[0], 'config/GroundingDINO_SwinT_OGC.py')
-        grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
-        # config_file = os.path.join(curr_path, '../gdino_config/GroundingDINO_SwinB.cfg.py')
-        # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
+        # config_file = os.path.join(groundingdino.__path__[0], 'config/GroundingDINO_SwinT_OGC.py')
+        # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
+        config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
+        grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
         if not os.path.exists(grounded_checkpoint):
             print('Downloading GroundedSAM model...')
             ckpts_dir = os.path.join(curr_path, 'ckpts')
             os.system(f'mkdir -p {ckpts_dir}')
-            # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
-            # os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
-            os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
-            os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
+            os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
+            os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
+            # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
+            # os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
         sam_checkpoint = os.path.join(curr_path, 'ckpts/sam_vit_h_4b8939.pth')
         if not os.path.exists(sam_checkpoint):
             print('Downloading SAM model...')
@@ -1750,17 +1750,20 @@ def test_grounded_sam():
     thresholds = [0.3]
     device = 'cuda'
     curr_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    config_file = os.path.join(curr_path, 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py')
-    grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
+    # config_file = os.path.join(curr_path, 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py')
+    # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
+    config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
+    grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
+    
     sam_checkpoint = os.path.join(curr_path, 'ckpts/sam_vit_h_4b8939.pth')
     if not os.path.exists(grounded_checkpoint):
         print('Downloading GroundedSAM model...')
         ckpts_dir = os.path.join(curr_path, 'ckpts')
         os.system(f'mkdir -p {ckpts_dir}')
-        # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
-        # os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
-        os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
-        os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
+        os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
+        os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
+        # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
+        # os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
     if not os.path.exists(sam_checkpoint):
         print('Downloading SAM model...')
         ckpts_dir = os.path.join(curr_path, 'ckpts')
