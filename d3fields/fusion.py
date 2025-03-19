@@ -29,6 +29,33 @@ from d3fields.utils.grounded_sam import grounded_instance_sam_new_ver
 from d3fields.utils.draw_utils import draw_keypoints, aggr_point_cloud_from_data
 from d3fields.utils.my_utils import  depth2fgpcd, fps_np
 
+def outlier_rejection_o3d(pcd):
+    outliers = None
+    new_outlier = None
+    rm_iter = 0
+    while new_outlier is None or len(new_outlier.points) > 0:
+        _, inlier_idx = pcd.remove_statistical_outlier(
+            nb_neighbors = 25, std_ratio = 1.5 + rm_iter * 0.5
+        )
+        new_pcd = pcd.select_by_index(inlier_idx)
+        new_outlier = pcd.select_by_index(inlier_idx, invert=True)
+        if outliers is None:
+            outliers = new_outlier
+        else:
+            outliers += new_outlier
+        pcd = new_pcd
+        rm_iter += 1
+    return pcd
+def outlier_rejection(pts3d):
+    # do some open3d point cloud processing
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(pts3d)
+    pcd = pcd.voxel_down_sample(voxel_size=0.005)
+    pcd = outlier_rejection_o3d(pcd)
+
+    pts3d = np.asarray(pcd.points)
+    return pts3d
+
 def project_points_coords(pts, Rt, K):
     """
     :param pts:  [pn,3]
@@ -228,18 +255,18 @@ class Fusion():
         
         # load GroundedSAM model
         curr_path = os.path.dirname(os.path.abspath(__file__))
-        # config_file = os.path.join(groundingdino.__path__[0], 'config/GroundingDINO_SwinT_OGC.py')
-        # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
-        config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
-        grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
+        config_file = os.path.join(groundingdino.__path__[0], 'config/GroundingDINO_SwinT_OGC.py')
+        grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
+        # config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
+        # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
         if not os.path.exists(grounded_checkpoint):
             print('Downloading GroundedSAM model...')
             ckpts_dir = os.path.join(curr_path, 'ckpts')
             os.system(f'mkdir -p {ckpts_dir}')
-            os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
-            os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
-            # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
-            # os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
+            # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
+            # os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
+            os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
+            os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
         sam_checkpoint = os.path.join(curr_path, 'ckpts/sam_vit_h_4b8939.pth')
         if not os.path.exists(sam_checkpoint):
             print('Downloading SAM model...')
@@ -1444,7 +1471,10 @@ class Fusion():
             instance_mask = mask[:, i] > 0.6
             masked_pts = grid[instance_mask & dist_mask & out['valid_mask']]
             
-            sample_pts, sample_idx, _ = fps_np(masked_pts.detach().cpu().numpy(), N, init_idx=init_idx)
+            # outlier rejection on masked_pts
+            masked_pts = outlier_rejection(masked_pts.detach().cpu().numpy())
+            
+            sample_pts, sample_idx, _ = fps_np(masked_pts, N, init_idx=init_idx)
             # src_feats_list.append(out['dino_feats'][sample_idx])
             src_feats_list.append(self.eval(torch.from_numpy(sample_pts).to(self.device, torch.float32))['dino_feats'])
             src_pts_list.append(sample_pts)
@@ -1750,20 +1780,20 @@ def test_grounded_sam():
     thresholds = [0.3]
     device = 'cuda'
     curr_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # config_file = os.path.join(curr_path, 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py')
-    # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
-    config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
-    grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
+    config_file = os.path.join(curr_path, 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py')
+    grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swint_ogc.pth')
+    # config_file = os.path.join(curr_path, '../../GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py')
+    # grounded_checkpoint = os.path.join(curr_path, 'ckpts/groundingdino_swinb_cogcoor.pth')
     
     sam_checkpoint = os.path.join(curr_path, 'ckpts/sam_vit_h_4b8939.pth')
     if not os.path.exists(grounded_checkpoint):
         print('Downloading GroundedSAM model...')
         ckpts_dir = os.path.join(curr_path, 'ckpts')
         os.system(f'mkdir -p {ckpts_dir}')
-        os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
-        os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
-        # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
-        # os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
+        # os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth')
+        # os.system(f'mv groundingdino_swinb_cogcoor.pth {ckpts_dir}')
+        os.system('wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth')
+        os.system(f'mv groundingdino_swint_ogc.pth {ckpts_dir}')
     if not os.path.exists(sam_checkpoint):
         print('Downloading SAM model...')
         ckpts_dir = os.path.join(curr_path, 'ckpts')
